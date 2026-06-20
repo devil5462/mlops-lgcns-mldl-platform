@@ -1,0 +1,83 @@
+# Kubernetes & Helm
+*.kubeconfig
+kubeconfig
+.helm/
+*.tgz
+helm-values/
+
+# Docker & Container
+*.tar
+*.tar.gz
+.docker/
+docker-compose.override.yml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+
+# IDE & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-workspace
+
+# Secrets & Credentials
+.env
+.env.local
+.env.*.local
+secrets/
+*.pem
+*.key
+*.crt
+.aws/
+credentials.json
+
+# Logs
+logs/
+*.log
+*.log.*
+npm-debug.log*
+
+# Temporary & Generated
+tmp/
+temp/
+*.tmp
+*.bak
+*.out
+dist/
+build/
+
+# AWS & Terraform
+*.tfstate
+*.tfstate.backup
+*.tfvars
+!*.tfvars.example
+.terraform/
+
+# Data & Models
+data/
+models/
+*.pkl
+*.joblib
+*.h5
+
+# Build outputs
+.next/
+out/
+dist/
+build/
