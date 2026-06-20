@@ -1,0 +1,81 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mlops-recommendation
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/devil5462/mlops-gitops
+    targetRevision: main
+    path: helm
+    helm:
+      releaseName: recommendation
+      values: |
+        image:
+          registry: ecr.aws
+          repository: mlops-recommendation
+          tag: latest
+
+        replicas: 3
+
+        resources:
+          requests:
+            cpu: 4
+            memory: 8Gi
+          limits:
+            cpu: 8
+            memory: 16Gi
+
+        autoscaling:
+          enabled: true
+          minReplicas: 2
+          maxReplicas: 10
+          targetCPUUtilizationPercentage: 60
+          targetMemoryUtilizationPercentage: 80
+
+        service:
+          type: ClusterIP
+          port: 80
+          targetPort: 8000
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mlops-prod
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - RespectIgnoreDifferences=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+
+  info:
+    - name: 'GitHub'
+      value: 'https://github.com/devil5462/mlops-lgcns-mldl-platform'
+    - name: 'Documentation'
+      value: 'https://github.com/devil5462/mlops-lgcns-mldl-platform/blob/main/README.md'
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  url: https://argocd.example.com
+  application.instanceLabelKey: argocd.argoproj.io/instance
+  server.insecure: "false"
+  server.x509.verify: "false"

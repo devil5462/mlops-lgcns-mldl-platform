@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mlops-prod
+  labels:
+    name: mlops-prod
+    environment: production
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mlops-staging
+  labels:
+    name: mlops-staging
+    environment: staging
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mlops-dev
+  labels:
+    name: mlops-dev
+    environment: development
+
+---
+# ResourceQuota for prod namespace
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: mlops-prod-quota
+  namespace: mlops-prod
+spec:
+  hard:
+    requests.cpu: "32"
+    requests.memory: "128Gi"
+    pods: "100"
+    services: "50"
+
+---
+# ResourceQuota for staging namespace
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: mlops-staging-quota
+  namespace: mlops-staging
+spec:
+  hard:
+    requests.cpu: "16"
+    requests.memory: "64Gi"
+    pods: "50"
+    services: "25"
+
+---
+# ResourceQuota for dev namespace
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: mlops-dev-quota
+  namespace: mlops-dev
+spec:
+  hard:
+    requests.cpu: "8"
+    requests.memory: "32Gi"
+    pods: "30"
+    services: "15"
+
+---
+# Network Policy for prod
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mlops-prod-network-policy
+  namespace: mlops-prod
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: mlops-prod
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: mlops-prod
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: kube-system
